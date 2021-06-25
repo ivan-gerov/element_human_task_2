@@ -1,0 +1,9 @@
+account,date,products,data,cost
+customer@bbc.co.uk,2020-08-11T15:20:21.031796,"{reporting,analytics}","{""a"": {""b"": true, ""c"": {""order_number"": 1}, ""e"": {""status"": ""success""}}}",0.11
+customer@p.otat.o,2020-08-12T10:55:48.031796,"{biometrics,analytics}","{""a"": {""b"": {""c"": ""1"", ""order_number"": 2, ""e"": {""status"": ""failure""}}}}",11.26
+demo@elementhuman.com,2020-08-16T14:20:39.031796,"{analytics}","{""a"": [{""b"": {""c"": {""order_number"": 3}}}, {""e"": ""unknown"", ""status"": ""unknown""}]}",4.32
+sam.pegler@elementhuman.com,2020-08-16T14:55:15.031796,"{reporting,analytics}","{""a"": null, ""b"": {""c"": [6, 5, 4, 3]}, ""order_number"": 4, ""e"": [{""status"": ""success""}]}",5.32
+diego@elementhuman.com,2020-08-17T10:20:48.031796,"{reporting}","{""a"": {""b"": {""c"": false, ""order_number"": 5}}, ""e"": null, ""status"": ""failure""}",0.16
+customer@p.otat.o,2020-08-18T17:10:11.031796,"{biometrics,analytics}","{""a"": {""b"": {""c"": ""1"", ""order_number"": 6, ""e"": {""status"": ""pending""}}}}",9.23
+customer@bbc.co.uk,2020-08-19T14:20:57.031796,"{reporting,analytics}","{""a"": {""b"": true, ""c"": {""order_number"": 7}, ""f"": {""status"": ""success""}}}",11.55
+customer@bbc.co.uk,2020-08-20T17:20:12.031796,"{reporting,analytics,biometrics}","{""a"": {""d"": true, ""c"": {""e"":{""order_number"": 8}}, ""f"": {""status"": ""pending""}}}",1.76
