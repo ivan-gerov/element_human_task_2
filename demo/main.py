@@ -21,7 +21,7 @@ def load_records(records: List[Dict[str, Any]]):
         session.commit()
 
 
-def export_records() -> List[Dict[str, Any]]:
+def export_records(table) -> List[Dict[str, Any]]:
     """Export records from database.
 
     Args:
@@ -32,15 +32,26 @@ def export_records() -> List[Dict[str, Any]]:
 
     """
     with session_scope() as session:
-        records = session.query(Orders).all()
-        # Convert to a list of dictionaries.
-        return [
-            {
-                "account": record.account,
-                "date": record.date,
-                "order_number": record.order_number,
-                "status": record.status,
-                "cost": record.cost,
-            }
-            for record in records
-        ]
+        if table == "orders":
+            records = session.query(Orders).all()
+            return [
+                {
+                    "account": record.account,
+                    "date": record.date,
+                    "order_number": record.order_number,
+                    "status": record.status,
+                    "cost": record.cost,
+                }
+                for record in records
+            ]
+        elif table == "users":
+            records = session.query(Users).all()
+            return [
+                {
+                    "account": record.account,
+                    "active": record.active,
+                    "is_demo": record.is_demo,
+                }
+                for record in records
+            ]
+

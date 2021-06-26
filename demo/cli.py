@@ -42,12 +42,13 @@ def load(filepath):
 
 @cli.command()
 @click.option("--filepath", required=True, help="Path to write records to.")
-def export(filepath):  # pragma: no cover
+@click.option("--db_table", required=True, help="Path to write records to.")
+def export(filepath, db_table):  # pragma: no cover
     """Export database records to CSV at file path."""
     log.info("Exporting records to file.")
 
     # Fetch records to export and get a list of fields to export.
-    exportable_records = export_records()
+    exportable_records = export_records(db_table)
     fieldnames = list(exportable_records[0].keys())
 
     log.info("Exporting %r columns over %r rows.", fieldnames, len(exportable_records))

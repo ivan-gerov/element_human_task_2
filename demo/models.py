@@ -40,7 +40,7 @@ class Users(Base):
     def __repr__(self):
         return (
             f"<Users account={self.account}, active={self.active},"
-            f"scopes={self.scopes}, data={self.data}>"
+            f"is_demo={self.is_demo}>"
         )
 
 
@@ -61,5 +61,5 @@ class Orders(Base):
         )
 
 
-# Users.__table__.create(bind=db, checkfirst=True)
+Users.__table__.create(bind=db, checkfirst=True)
 Orders.__table__.create(bind=db, checkfirst=True)
