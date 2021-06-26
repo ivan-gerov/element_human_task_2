@@ -42,7 +42,7 @@ def load(respondent_id, notify):
 
 @cli.command()
 @click.option("--file", required=True, help="Path to write records to.")
-def export(files):  # pragma: no cover
+def export(file):  # pragma: no cover
     """Export database records to CSV at file path."""
     log.info("Exporting records to file.")
 
