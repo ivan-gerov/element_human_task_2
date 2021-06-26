@@ -1,4 +1,3 @@
-
 import pandas as pd
 import json
 
@@ -24,14 +23,14 @@ def extract_orderno_and_status(nested_dict: dict) -> dict:
             i = 0
             for item in struct:
                 flatten(item, str(i))
-                i += 1        
+                i += 1
         else:
             out[name] = struct
 
     flatten(nested_dict)
-	
-    out = {k:v for k, v in out.items() if k in ["status", "order_number"]}
-    
+
+    out = {k: v for k, v in out.items() if k in ["status", "order_number"]}
+
     return out
 
 
@@ -57,15 +56,10 @@ def parse_orders(csv_filepath: str) -> list:
     df = df.join(pd.DataFrame([x for x in df["data"]]))
     df.drop(columns=["data", "products"], inplace=True)
 
-    # Convert Dataframe to a list of dicts for each row 
+    # Convert date column to datetime
+    df["date"] = pd.to_datetime(df["date"])
+
+    # Convert Dataframe to a list of dicts for each row
     list_of_parsed_rows = list(df.T.to_dict().values())
-    
+
     return list_of_parsed_rows
-
-
-filepath = "tests/resources/orders.csv"
-
-data = parse_orders(filepath)
-
-for row in data:
-    print(row)

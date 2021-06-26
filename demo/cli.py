@@ -6,7 +6,7 @@ from glob import glob
 
 import click  # type: ignore
 
-from demo.main import export_records
+from demo.main import export_records, load_records
 from demo.utils import parse_orders
 
 
@@ -22,7 +22,7 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--file", required=True, help="Path to files to index. Supports globbing."
+    "--filepath", required=True, help="Path to files to index. Supports globbing."
 )
 def load(filepath):
     """Command line interface to load data to our database.
@@ -36,13 +36,12 @@ def load(filepath):
     """
     log.info("Loading files.")
 
-    orders = parse_orders(filename)
-
-    
+    orders = parse_orders(filepath)
+    load_records(orders)
 
 
 @cli.command()
-@click.option("--file", required=True, help="Path to write records to.")
+@click.option("--filepath", required=True, help="Path to write records to.")
 def export(filepath):  # pragma: no cover
     """Export database records to CSV at file path."""
     log.info("Exporting records to file.")
@@ -51,7 +50,7 @@ def export(filepath):  # pragma: no cover
     exportable_records = export_records()
     fieldnames = list(exportable_records[0].keys())
 
-    log.info("Exporting %r columns over %r rows.", fieldnames, len(export_records))
+    log.info("Exporting %r columns over %r rows.", fieldnames, len(exportable_records))
     with open(filepath, "w") as csvfile:
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
