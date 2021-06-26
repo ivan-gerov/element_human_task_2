@@ -7,6 +7,7 @@ from glob import glob
 import click  # type: ignore
 
 from demo.main import export_records
+from demo.utils import parse_orders
 
 
 log = logging.getLogger(__name__)
@@ -21,13 +22,13 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--files", required=True, help="Path to files to index. Supports globbing."
+    "--file", required=True, help="Path to files to index. Supports globbing."
 )
-def load(respondent_id, notify):
+def load(filepath):
     """Command line interface to load data to our database.
 
     Args:
-        files (str): Path to files to parse and upload.
+        filepath (str): Path to file to parse and upload.
 
     Returns:
         None
@@ -35,14 +36,14 @@ def load(respondent_id, notify):
     """
     log.info("Loading files.")
 
-    # TODO: Implement the rest of this command line function.
-    files = glob(files)
-    ...
+    orders = parse_orders(filename)
+
+    
 
 
 @cli.command()
 @click.option("--file", required=True, help="Path to write records to.")
-def export(file):  # pragma: no cover
+def export(filepath):  # pragma: no cover
     """Export database records to CSV at file path."""
     log.info("Exporting records to file.")
 
@@ -51,7 +52,7 @@ def export(file):  # pragma: no cover
     fieldnames = list(exportable_records[0].keys())
 
     log.info("Exporting %r columns over %r rows.", fieldnames, len(export_records))
-    with open(file, "w") as csvfile:
+    with open(filepath, "w") as csvfile:
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
