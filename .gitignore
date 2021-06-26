@@ -67,7 +67,9 @@ target/
 .env
 
 # Database
-*.db
+
+# Intentionally uploading the db for the review of the task
+#*.db
 *.rdb
 
 # Pycharm
