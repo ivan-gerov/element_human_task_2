@@ -13,9 +13,9 @@ from pytest_postgresql import factories
 log = logging.getLogger(__name__)
 
 socket_dir = tempfile.TemporaryDirectory()
-postgresql_my_proc = factories.postgresql_proc(
-    port=None, unixsocketdir=socket_dir.name)
+postgresql_my_proc = factories.postgresql_proc(port=None, unixsocketdir=socket_dir.name)
 postgresql_my = factories.postgresql("postgresql_my_proc")
+
 
 @pytest.fixture(scope="function")
 def integration_database(caplog, request, postgresql_my):
@@ -31,5 +31,3 @@ def integration_database(caplog, request, postgresql_my):
     session = Session()
     yield session
     session.close()
-
-

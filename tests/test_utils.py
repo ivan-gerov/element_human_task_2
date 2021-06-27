@@ -1,6 +1,7 @@
 from demo.utils import extract_orderno_and_status, parse_orders
 from pandas import Timestamp
 
+
 def test_extract_orderno_and_status():
     """
     Tests the extraction of an order_number and status from
@@ -47,6 +48,3 @@ def test_parse_orders():
     ]
 
     assert parse_orders(test_filepath) == expected_result
-    
-
-

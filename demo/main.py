@@ -34,7 +34,7 @@ def export_records(table: str) -> List[Dict[str, Any]]:
         A List of Dictionary objects containing the required fields.
 
     """
-    
+
     return_val = []
     tables = {"orders": Orders, "users": Users}
     with session_scope() as session:
@@ -45,6 +45,5 @@ def export_records(table: str) -> List[Dict[str, Any]]:
             record = record.__dict__.copy()
             record.pop("_sa_instance_state", None)
             return_val.append(record)
-        
-    return return_val
 
+    return return_val

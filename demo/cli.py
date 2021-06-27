@@ -21,11 +21,11 @@ def cli():
 
 
 @cli.command()
+@click.option("--filepath", required=True, help="Path to file containing CSV data.")
 @click.option(
-    "--filepath", required=True, help="Path to file containing CSV data."
-)
-@click.option(
-    "--db_table", required=True, help="Database table in which we want to import the data."
+    "--db_table",
+    required=True,
+    help="Database table in which we want to import the data.",
 )
 def load(filepath, db_table):
     """Command line interface to load data to our database.
@@ -53,7 +53,7 @@ def export(filepath, db_table):  # pragma: no cover
     # Fetch records to export and get a list of fields to export.
     exportable_records = export_records(db_table)
     fieldnames = list(exportable_records[0].keys())
-    
+
     log.info("Exporting %r columns over %r rows.", fieldnames, len(exportable_records))
     with open(filepath, "w") as csvfile:
 
