@@ -2,13 +2,15 @@
 from typing import Any, Dict, List
 
 from demo.models import metadata, Users, session_scope, Orders
+from demo.utils import get_table_records
 
+from sqlalchemy.exc import IntegrityError
 
-def load_records(records: List[Dict[str, Any]], table: str):
-    """Loads records into database
+def load_records(orders: List[Dict[str, Any]]):
+    """Loads order records into database
 
     Args:
-        A list of dicts containing the records and 
+        A list of dicts containing the orders and 
         the table in which we want to import them.
 
     Returns:
@@ -16,12 +18,30 @@ def load_records(records: List[Dict[str, Any]], table: str):
 
     """
     tables = {"orders": Orders, "users": Users}
-
     with session_scope() as session:
-        for record in records:
-            row = tables[table](**record)
-            session.add(row)
-        session.commit()
+        for record in orders:
+            try:
+                users = [user["account"] for user in get_table_records(tables["users"])] 
+                if record["account"] not in users:                    
+                    user = {
+                        "account": record["account"],
+                        "active": True,
+                        "is_demo": True
+                        }
+                    row = tables["users"](**user)
+                    session.add(row)
+                    session.commit()
+            except IntegrityError:
+                print("User is already in the database")
+
+            try:
+                orders = [order["order_number"] for order in get_table_records(tables["orders"])]
+                row = tables["orders"](**record)
+                session.add(row)
+                session.commit()
+            except Exception as e:
+                print(e)
+                print("Order is already in the database")
 
 
 def export_records(table: str) -> List[Dict[str, Any]]:
@@ -35,15 +55,8 @@ def export_records(table: str) -> List[Dict[str, Any]]:
 
     """
 
-    return_val = []
+    
     tables = {"orders": Orders, "users": Users}
-    with session_scope() as session:
-        rows = []
-        records = session.query(tables[table]).all()
-        # Dynamically getting all columns and values
-        for record in records:
-            record = record.__dict__.copy()
-            record.pop("_sa_instance_state", None)
-            return_val.append(record)
 
+    # TODO Make a join operation that calculates what the task requires
     return return_val

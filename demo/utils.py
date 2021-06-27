@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-
+from .models import session_scope
 
 def extract_orderno_and_status(nested_dict: dict) -> dict:
     """
@@ -63,3 +63,15 @@ def parse_orders(csv_filepath: str) -> list:
     list_of_parsed_rows = list(df.T.to_dict().values())
 
     return list_of_parsed_rows
+
+def get_table_records(table):
+    rows = []
+    with session_scope() as session:
+        records = session.query(table).all()
+        # Dynamically getting all columns and values
+        for record in records:
+            record = record.__dict__.copy()
+            record.pop("_sa_instance_state", None)
+            rows.append(record)
+    return rows
+

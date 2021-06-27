@@ -22,12 +22,7 @@ def cli():
 
 @cli.command()
 @click.option("--filepath", required=True, help="Path to file containing CSV data.")
-@click.option(
-    "--db_table",
-    required=True,
-    help="Database table in which we want to import the data.",
-)
-def load(filepath, db_table):
+def load(filepath):
     """Command line interface to load data to our database.
 
     Args:
@@ -40,7 +35,7 @@ def load(filepath, db_table):
     log.info("Loading files.")
 
     orders = parse_orders(filepath)
-    load_records(orders, db_table)
+    load_records(orders)
 
 
 @cli.command()
