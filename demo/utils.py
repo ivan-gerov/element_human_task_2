@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from .models import session_scope
 
+
 def extract_orderno_and_status(nested_dict: dict) -> dict:
     """
         Flatten dict object with nested keys into a single level and
@@ -64,6 +65,7 @@ def parse_orders(csv_filepath: str) -> list:
 
     return list_of_parsed_rows
 
+
 def get_table_records(table):
     rows = []
     with session_scope() as session:
@@ -74,4 +76,3 @@ def get_table_records(table):
             record.pop("_sa_instance_state", None)
             rows.append(record)
     return rows
-

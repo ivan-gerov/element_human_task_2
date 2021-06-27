@@ -1,13 +1,17 @@
 """Application main module."""
 from typing import Any, Dict, List
 
-from demo.models import metadata, Users, session_scope, Orders
+from demo.models import metadata, session_scope, Users, Orders
 from demo.utils import get_table_records
 
+from datetime import datetime, timedelta
+from sqlalchemy import extract, func
 from sqlalchemy.exc import IntegrityError
 
+
 def load_records(orders: List[Dict[str, Any]]):
-    """Loads order records into database
+    """Loads order records into database into the Orders Table
+    and add a new User per new unique user email.
 
     Args:
         A list of dicts containing the orders and 
@@ -17,35 +21,34 @@ def load_records(orders: List[Dict[str, Any]]):
         None 
 
     """
-    tables = {"orders": Orders, "users": Users}
     with session_scope() as session:
         for record in orders:
             try:
-                users = [user["account"] for user in get_table_records(tables["users"])] 
-                if record["account"] not in users:                    
+                users = [user["account"] for user in get_table_records(Users)]
+                if record["account"] not in users:
                     user = {
                         "account": record["account"],
                         "active": True,
-                        "is_demo": True
-                        }
-                    row = tables["users"](**user)
+                        "is_demo": True,
+                    }
+                    row = Users(**user)
                     session.add(row)
                     session.commit()
             except IntegrityError:
                 print("User is already in the database")
 
             try:
-                orders = [order["order_number"] for order in get_table_records(tables["orders"])]
-                row = tables["orders"](**record)
+                orders = [order["order_number"] for order in get_table_records(Orders)]
+                row = Orders(**record)
                 session.add(row)
                 session.commit()
-            except Exception as e:
+            except IntegrityError:
                 print(e)
                 print("Order is already in the database")
 
 
-def export_records(table: str) -> List[Dict[str, Any]]:
-    """Export records from database.
+def export_records() -> List[Dict[str, Any]]:
+    """Export users accounts and total account value for the past 12 months.
 
     Args:
         None
@@ -54,9 +57,28 @@ def export_records(table: str) -> List[Dict[str, Any]]:
         A List of Dictionary objects containing the required fields.
 
     """
+    return_val = []
+    with session_scope() as session:
+        filter_after = datetime.today() - timedelta(12 * 30)
 
-    
-    tables = {"orders": Orders, "users": Users}
+        records = (
+            session.query(Users, func.sum(Orders.cost).label("total_account_value"))
+            .join(Orders)
+            .filter(
+                extract("year", Orders.date) >= filter_after.year,
+                extract("month", Orders.date) >= filter_after.month,
+                extract("day", Orders.date) >= filter_after.day,
+            )
+            .group_by(Users.account)
+            .all()
+        )
 
-    # TODO Make a join operation that calculates what the task requires
+        for user_account, total_account_value in records:
+            user_account = {
+                "account": user_account.account,
+                "active": user_account.active,
+                "is_demo": user_account.is_demo,
+                "total_account_value": total_account_value,
+            }
+            return_val.append(user_account)
     return return_val
