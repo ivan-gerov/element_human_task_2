@@ -22,9 +22,12 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--filepath", required=True, help="Path to files to index. Supports globbing."
+    "--filepath", required=True, help="Path to file containing CSV data."
 )
-def load(filepath):
+@click.option(
+    "--db_table", required=True, help="Database table in which we want to import the data."
+)
+def load(filepath, db_table):
     """Command line interface to load data to our database.
 
     Args:
@@ -37,12 +40,12 @@ def load(filepath):
     log.info("Loading files.")
 
     orders = parse_orders(filepath)
-    load_records(orders)
+    load_records(orders, db_table)
 
 
 @cli.command()
 @click.option("--filepath", required=True, help="Path to write records to.")
-@click.option("--db_table", required=True, help="Path to write records to.")
+@click.option("--db_table", required=True, help="Table to export.")
 def export(filepath, db_table):  # pragma: no cover
     """Export database records to CSV at file path."""
     log.info("Exporting records to file.")
@@ -50,7 +53,7 @@ def export(filepath, db_table):  # pragma: no cover
     # Fetch records to export and get a list of fields to export.
     exportable_records = export_records(db_table)
     fieldnames = list(exportable_records[0].keys())
-
+    
     log.info("Exporting %r columns over %r rows.", fieldnames, len(exportable_records))
     with open(filepath, "w") as csvfile:
 

@@ -1,32 +1,35 @@
 import logging
 import os
+import sys
+import tempfile
 
 import pytest  # type: ignore
-from demo import models
+from demo.models import Base
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from pytest_postgresql import factories
 
 log = logging.getLogger(__name__)
 
+socket_dir = tempfile.TemporaryDirectory()
+postgresql_my_proc = factories.postgresql_proc(
+    port=None, unixsocketdir=socket_dir.name)
+postgresql_my = factories.postgresql("postgresql_my_proc")
 
-@pytest.fixture()
-def integration_database(caplog, request, postgresql):
+@pytest.fixture(scope="function")
+def integration_database(caplog, request, postgresql_my):
     caplog.set_level(logging.DEBUG)
-    test_url = "postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}".format(
-        user=postgresql.info.user,
-        password=postgresql.info.password,
-        host=postgresql.info.host,
-        port=postgresql.info.port,
-        dbname=postgresql.info.dbname,
-    )
-    # Export this so we can fetch it from tests.
-    os.environ["TEST_DB_URL"] = test_url
-    log.debug("Generated Postgres URL %r.", test_url)
 
-    models.metadata.create_all(models.db.engine)
+    def dbcreator():
+        return postgresql_my.cursor().connection
 
-    with models.session_scope() as session:
-        # Add a dummy record.
-        demo_user = models.Users(
-            account="demo@elementhuman.com", active=True, is_demo=True
-        )
-        session.add(demo_user)
-        session.commit()
+    db = create_engine("postgresql+psycopg2://", creator=dbcreator)
+    Base.metadata.create_all(db)
+
+    Session = sessionmaker(bind=db)
+    session = Session()
+    yield session
+    session.close()
+
+
