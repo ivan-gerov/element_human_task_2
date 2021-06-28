@@ -43,7 +43,6 @@ def load_records(orders: List[Dict[str, Any]]):
                 session.add(row)
                 session.commit()
             except IntegrityError:
-                print(e)
                 print("Order is already in the database")
 
 
